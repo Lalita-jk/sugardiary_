@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SugarDiary - ตรวจน้ำตาลในเลือด</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
+<style>
+  /* โทนสีสดใสทันสมัยสำหรับผู้สูงอายุ */
+  body {
+    font-family: 'Kanit', sans-serif;
+    background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+    padding: 25px;
+    color: #1b3a2a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .container {
+    background: #ffffffdd;
+    max-width: 480px;
+    width: 100%;
+    padding: 30px 35px;
+    border-radius: 20px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.8rem;
+    color: #2e7d32;
+    margin-bottom: 10px;
+  }
+  #criteria {
+    background: #e0f2f1;
+    border-left: 6px solid #26a69a;
+    border-radius: 12px;
+    padding: 18px 22px;
+    font-size: 1.15rem;
+    color: #004d40;
+    font-weight: 600;
+    margin-bottom: 25px;
+    line-height: 1.5em;
+  }
+  label {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 18px;
+    color: #1b5e20;
+  }
+  select, input[type=number], input[type=text] {
+    width: 100%;
+    padding: 14px 16px;
+    margin-top: 8px;
+    font-size: 1.2rem;
+    border: 2.5px solid #66bb6a;
+    border-radius: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  select:focus, input[type=number]:focus, input[type=text]:focus {
+    border-color: #388e3c;
+    outline: none;
+  }
+  button {
+    margin-top: 28px;
+    width: 100%;
+    background: #ff7043;
+    border: none;
+    color: white;
+    padding: 16px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(255, 112, 67, 0.6);
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #e64a19;
+  }
+  #result {
+    margin-top: 28px;
+    background: #c8e6c9;
+    border: 2.2px solid #388e3c;
+    padding: 22px 26px;
+    border-radius: 16px;
+    font-size: 1.35rem;
+    color: #2e7d32;
+    font-weight: 700;
+    text-align: center;
+  }
+  #recommendation {
+    margin-top: 16px;
+    font-size: 1.1rem;
+    color: #33691e;
+    font-weight: 600;
+    line-height: 1.4em;
+    text-align: center;
+  }
+  .alert-buttons {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+  }
+  .alert-buttons button {
+    background: #d84315;
+    margin: 0 12px;
+    padding: 14px 26px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(216, 67, 21, 0.7);
+    transition: background 0.3s ease;
+  }
+  .alert-buttons button:hover {
+    background: #bf360c;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍵 SugarDiary 🍚</h1>
+
+    <div id="criteria">
+      ✅ <strong>เกณฑ์ระดับน้ำตาลในเลือด</strong><br />
+      ก่อนรับประทานอาหาร:<br />
+      &nbsp;&nbsp;- ต่ำกว่า 80 = น้ำตาลต่ำ<br />
+      &nbsp;&nbsp;- 80 - 130 = ปกติ<br />
+      &nbsp;&nbsp;- มากกว่า 130 = น้ำตาลสูง<br /><br />
+      หลังรับประทานอาหาร 2 ชั่วโมง:<br />
+      &nbsp;&nbsp;- ต่ำกว่า 80 = น้ำตาลต่ำ<br />
+      &nbsp;&nbsp;- 80 - 180 = ปกติ<br />
+      &nbsp;&nbsp;- มากกว่า 180 = น้ำตาลสูง (เฝ้าระวังอาการ และหากมีอาการผิดปกติรีบพบแพทย์ทันที)
+    </div>
+
+    <label for="checkTime">⏰ เลือกเวลาตรวจก่อน/หลังอาหาร:</label>
+    <select id="checkTime">
+      <option value="before">ก่อนรับประทานอาหาร</option>
+      <option value="after">หลังรับประทานอาหาร 2 ชั่วโมง</option>
+    </select>
+
+    <label for="sugarLevel">🩸 ระดับน้ำตาลในเลือด (mg/dL):</label>
+    <input type="number" id="sugarLevel" placeholder="ใส่ค่าระดับน้ำตาล" />
+
+    <label for="relativePhone">📞 เบอร์ติดต่อญาติ:</label>
+    <input type="text" id="relativePhone" value="0611716764" readonly />
+
+    <button onclick="checkSugar()">🔎 ตรวจสอบระดับน้ำตาล</button>
+
+    <div id="result"></div>
+    <div id="recommendation"></div>
+
+    <div class="alert-buttons">
+      <button onclick="callNumber('tel:0611716764')">📲 โทรหาญาติ</button>
+      <button onclick="callNumber('tel:1669')">🚨 โทรฉุกเฉิน 1669</button>
+    </div>
+  </div>
+
+  <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+  function callNumber(number) {
+    window.location.href = number;
+  }
+
+  function speak(text) {
+    if ('speechSynthesis' in window) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = 'th-TH';
+      speechSynthesis.speak(msg);
+    }
+  }
+
+  function checkSugar() {
+    const time = document.getElementById('checkTime').value;
+    const level = parseInt(document.getElementById('sugarLevel').value);
+    const result = document.getElementById('result');
+    const recommendation = document.getElementById('recommendation');
+    const alertButtons = document.querySelector('.alert-buttons');
+    const alertSound = document.getElementById('alertSound');
+
+    if (isNaN(level)) {
+      alert("กรุณาใส่ค่าน้ำตาลให้ถูกต้อง");
+      return;
+    }
+
+    let message = "";
+    let recommend = "";
+    let alertNeeded = false;
+
+    if (time === 'before') {
+      // ก่อนอาหาร
+      if (level < 80) {
+        message = "🍯 น้ำตาลต่ำก่อนอาหาร! ระวังอาการเวียนหัวหรือสั่น ให้รีบกินน้ำหวานหรือลูกอมรสหวาน หลังรับประทานเสร็จให้ตรวจซ้ำอีก 15 นาที หากยังมีอาการผิดปกติให้รีบพบแพทย์";
+        recommend = "ระดับน้ำตาลควรอยู่ระหว่าง 80 - 130 mg/dL ก่อนรับประทานอาหาร";
+        alertNeeded = true;
+      } else if (level <= 130) {
+        message = "✅ น้ำตาลอยู่ในเกณฑ์ปกติก่อนอาหาร";
+        recommend = "ระดับน้ำตาลควรอยู่ระหว่าง 80 - 130 mg/dL ก่อนรับประทานอาหาร";
+      } else {
+        message = "🍭 น้ำตาลสูงก่อนอาหาร! อาจมีอาการกระหายน้ำมากกว่าปกติ ปัสสาวะบ่อย หากมีอาการผิดปกติให้รีบพบแพทย์";
+        recommend = "ระดับน้ำตาลไม่ควรเกิน 130 mg/dL ก่อนรับประทานอาหาร";
+        alertNeeded = true;
+      }
+    } else {
+      // หลังอาหาร 2 ชั่วโมง
+      if (level < 80) {
+        message = "🍯 น้ำตาลต่ำหลังอาหาร! ระวังอาการเวียนหัวหรือสั่น";
+        recommend = "ระดับน้ำตาลควรอยู่ระหว่าง 80 - 180 mg/dL หลังรับประทานอาหาร 2 ชั่วโมง";
+        alertNeeded = true;
+      } else if (level <= 180) {
+        message = "✅ น้ำตาลอยู่ในเกณฑ์ปกติหลังอาหาร 2 ชั่วโมง";
+        recommend = "ระดับน้ำตาลควรอยู่ระหว่าง 80 - 180 mg/dL หลังรับประทานอาหาร 2 ชั่วโมง";
+      } else {
+        message = "🍭 น้ำตาลสูงหลังอาหาร! เฝ้าระวังอาการและรีบพบแพทย์ถ้ามีอาการผิดปกติ";
+        recommend = "ระดับน้ำตาลควรต่ำกว่า 180 mg/dL หลังรับประทานอาหาร 2 ชั่วโมง";
+        alertNeeded = true;
+      }
+    }
+
+    result.innerText = message;
+    recommendation.innerText = recommend;
+    speak(message + " " + recommend);
+
+    if (alertNeeded) {
+      alertButtons.style.display = "flex";
+      alertSound.play();
+    } else {
+      alertButtons.style.display = "none";
+    }
+  }
+</script>
+</body>
+</html>
